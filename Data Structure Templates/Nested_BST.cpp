@@ -3,13 +3,13 @@
 
 struct NodeTree{
     int value;
-    struct NodeTree *left_child, *right_child;
+    struct NodeTree *left, *right;
 };
 
 struct NodeNestedTree{
     int id;
     struct NodeTree *root;
-    struct NodeNestedTree *left_child, *right_child;
+    struct NodeNestedTree *left, *right;
 } *root_nested_tree;
 
 void get_enter(){
@@ -43,7 +43,7 @@ int menu(){
 struct NodeTree *create_node(int value){
     struct NodeTree *new_node = (struct NodeTree *) malloc(sizeof(struct NodeTree));
     new_node->value = value;
-    new_node->left_child = new_node->right_child = NULL;
+    new_node->left = new_node->right = NULL;
     return new_node;
 }
 
@@ -55,10 +55,10 @@ struct NodeTree *insert_node(struct NodeTree *new_node, struct NodeTree *current
     }
     else{ //ada isinya
         if(new_node->value < current_node->value){
-            current_node->left_child = insert_node(new_node, current_node->left_child);
+            current_node->left = insert_node(new_node, current_node->left);
         }
         else if(new_node->value > current_node->value){
-            current_node->right_child = insert_node(new_node, current_node->right_child);
+            current_node->right = insert_node(new_node, current_node->right);
         }
         else{
             puts("Data already exist!");
@@ -74,25 +74,25 @@ void pre_order(struct NodeTree *current_node){
         return;
     }
     printf("%d ", current_node->value);
-    pre_order(current_node->left_child);
-    pre_order(current_node->right_child);
+    pre_order(current_node->left);
+    pre_order(current_node->right);
 }
 
 void in_order(struct NodeTree *current_node){
     if(current_node == NULL){
         return;
     }
-    in_order(current_node->left_child);
+    in_order(current_node->left);
     printf("%d ", current_node->value);
-    in_order(current_node->right_child);
+    in_order(current_node->right);
 }
 
 void post_order(struct NodeTree *current_node){
     if(current_node == NULL){
         return;
     }
-    post_order(current_node->left_child);
-    post_order(current_node->right_child);
+    post_order(current_node->left);
+    post_order(current_node->right);
     printf("%d ", current_node->value);
 }
 
@@ -104,17 +104,17 @@ void print_tree(struct NodeTree *root){
 
 //predecessor & successor dari node di suatu tree
 struct NodeTree *predecessor_tree(struct NodeTree *target_delete){
-    struct NodeTree *predecessor_node = target_delete->left_child;
-    while(predecessor_node->right_child != NULL){
-        predecessor_node = predecessor_node->right_child;
+    struct NodeTree *predecessor_node = target_delete->left;
+    while(predecessor_node->right != NULL){
+        predecessor_node = predecessor_node->right;
     }
     return predecessor_node;
 }
 
 struct NodeTree *successor_tree(struct NodeTree *target_delete){
-    struct NodeTree *successor_node = target_delete->right_child;
-    while(successor_node->left_child != NULL){
-        successor_node = successor_node->left_child;
+    struct NodeTree *successor_node = target_delete->right;
+    while(successor_node->left != NULL){
+        successor_node = successor_node->left;
     }
     return successor_node;
 }
@@ -127,17 +127,17 @@ struct NodeTree *delete_node(struct NodeTree *current_node, int target_value){
         return current_node;
     }
     if(target_value < current_node->value){
-        current_node->left_child = delete_node(current_node->left_child, target_value);
+        current_node->left = delete_node(current_node->left, target_value);
     }
     else if(target_value > current_node->value){
-        current_node->right_child = delete_node(current_node->right_child, target_value);
+        current_node->right = delete_node(current_node->right, target_value);
     }
     else if(target_value == current_node->value){ //ketemu value-nya
-        if(current_node->left_child == NULL && current_node->right_child == NULL){
+        if(current_node->left == NULL && current_node->right == NULL){
             free(current_node);
             return NULL;
         }
-        else if(current_node->left_child != NULL){
+        else if(current_node->left != NULL){
             // ========== Teknik Predecessor ============
             struct NodeTree *penerus = predecessor_tree(current_node);
 
@@ -146,9 +146,9 @@ struct NodeTree *delete_node(struct NodeTree *current_node, int target_value){
             penerus->value = current_node->value;
             current_node->value = temp;
 
-            current_node->left_child = delete_node(current_node->left_child, target_value);
+            current_node->left = delete_node(current_node->left, target_value);
         }
-        else if(current_node->right_child != NULL){
+        else if(current_node->right != NULL){
             //========== Teknik Successor ============
             struct NodeTree *penerus = successor_tree(current_node);
 
@@ -157,7 +157,7 @@ struct NodeTree *delete_node(struct NodeTree *current_node, int target_value){
             penerus->value = current_node->value;
             current_node->value = temp;
 
-            current_node->right_child = delete_node(current_node->right_child, target_value);
+            current_node->right = delete_node(current_node->right, target_value);
         }
     }
     return current_node;
@@ -182,7 +182,7 @@ struct NodeNestedTree *create_root(struct NodeTree *new_node){
     struct NodeNestedTree *new_root = (struct NodeNestedTree *) malloc(sizeof(struct NodeNestedTree));
     new_root->root = new_node;
     new_root->id = get_root_identity(new_node->value);
-    new_root->left_child = new_root->right_child = NULL;
+    new_root->left = new_root->right = NULL;
     return new_root;
 }
 
@@ -194,10 +194,10 @@ struct NodeNestedTree *insert_nested_tree(struct NodeTree *new_node, struct Node
     }
     else{ //ada isinya
         if(get_root_identity(new_node->value) < get_root_identity(current_node->root->value)){
-            current_node->left_child = insert_nested_tree(new_node, current_node->left_child);
+            current_node->left = insert_nested_tree(new_node, current_node->left);
         }
         else if(get_root_identity(new_node->value) > get_root_identity(current_node->root->value)){
-            current_node->right_child = insert_nested_tree(new_node, current_node->right_child);
+            current_node->right = insert_nested_tree(new_node, current_node->right);
         }
         else{ //root ditemukan
             current_node->root = insert_node(new_node, current_node->root);
@@ -215,23 +215,23 @@ void print_nested_tree(struct NodeNestedTree *current_node){ //pre-order
     printf("===== Root %d =====\n", current_node->id);
     print_tree(current_node->root); puts("");
 
-    print_nested_tree(current_node->left_child);
-    print_nested_tree(current_node->right_child);
+    print_nested_tree(current_node->left);
+    print_nested_tree(current_node->right);
 }
 
 //predecessor & successor dari suatu root di nested tree
 struct NodeNestedTree *predecessor_nested_tree(struct NodeNestedTree *target_delete){
-    struct NodeNestedTree *predecessor_node = target_delete->left_child;
-    while(predecessor_node->right_child != NULL){
-        predecessor_node = predecessor_node->right_child;
+    struct NodeNestedTree *predecessor_node = target_delete->left;
+    while(predecessor_node->right != NULL){
+        predecessor_node = predecessor_node->right;
     }
     return predecessor_node;
 }
 
 struct NodeNestedTree *successor_nested_tree(struct NodeNestedTree *target_delete){
-    struct NodeNestedTree *successor_node = target_delete->right_child;
-    while(successor_node->left_child != NULL){
-        successor_node = successor_node->left_child;
+    struct NodeNestedTree *successor_node = target_delete->right;
+    while(successor_node->left != NULL){
+        successor_node = successor_node->left;
     }
     return successor_node;
 }
@@ -243,19 +243,19 @@ struct NodeNestedTree *delete_root(struct NodeNestedTree *current_node, int root
         return current_node;
     }
     if(root_id < current_node->id){
-        current_node->left_child = delete_root(current_node->left_child, root_id);
+        current_node->left = delete_root(current_node->left, root_id);
     }
     else if(root_id > current_node->id){
-        current_node->right_child = delete_root(current_node->right_child, root_id);
+        current_node->right = delete_root(current_node->right, root_id);
     }
     else{ //ketemu rootnya
         // current_node = execute_delete_root(current_node);
         current_node->root = clear_tree(current_node->root);
-        if(current_node->left_child == NULL && current_node->right_child == NULL){
+        if(current_node->left == NULL && current_node->right == NULL){
             free(current_node);
             return NULL;
         }
-        else if(current_node->left_child != NULL){
+        else if(current_node->left != NULL){
             //========== Teknik Predecessor ============
             struct NodeNestedTree *penerus = predecessor_nested_tree(current_node);
 
@@ -267,9 +267,9 @@ struct NodeNestedTree *delete_root(struct NodeNestedTree *current_node, int root
             current_node->id = penerus->id;
             penerus->id = temp_id;
 
-            current_node->left_child = delete_root(current_node->left_child, root_id);
+            current_node->left = delete_root(current_node->left, root_id);
         }
-        else if(current_node->right_child != NULL){
+        else if(current_node->right != NULL){
             //========== Teknik Successor ============
             struct NodeNestedTree *penerus = successor_nested_tree(current_node);
 
@@ -281,7 +281,7 @@ struct NodeNestedTree *delete_root(struct NodeNestedTree *current_node, int root
             current_node->id = penerus->id;
             penerus->id = temp_id;
 
-            current_node->right_child = delete_root(current_node->right_child, root_id);
+            current_node->right = delete_root(current_node->right, root_id);
         }
     }
     return current_node;
@@ -295,10 +295,10 @@ struct NodeNestedTree *delete_value(struct NodeNestedTree *current_node, int tar
         return current_node;
     }
     if(get_root_identity(target_value) < current_node->id){
-        current_node->left_child = delete_value(current_node->left_child, target_value);
+        current_node->left = delete_value(current_node->left, target_value);
     }
     else if(get_root_identity(target_value) > current_node->id){
-        current_node->right_child = delete_value(current_node->right_child, target_value);
+        current_node->right = delete_value(current_node->right, target_value);
     }
     else if(get_root_identity(target_value) == current_node->id){ //ketemu rootnya
         current_node->root = delete_node(current_node->root, target_value);
