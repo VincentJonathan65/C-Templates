@@ -80,7 +80,7 @@ struct Node *AVL_balance(struct Node *root){
 
 struct Node *insert_node(struct Node *root, struct Node *new_node){
     if(root == NULL){
-        new_node->height = 0;
+        new_node->height = 1;
         root = new_node;
     }
     else{
